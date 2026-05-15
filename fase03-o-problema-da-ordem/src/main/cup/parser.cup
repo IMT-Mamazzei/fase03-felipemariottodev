@@ -22,7 +22,10 @@ non terminal program, stmt_list, stmt;
 non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
 non terminal expr;
 
-/* Precedências e Associatividade */
+/* 
+ * Precedências: da MAIS BAIXA (topo) para a MAIS ALTA (baixo).
+ * IFX e ELSE ficam abaixo dos operadores pois têm menor precedência.
+ */
 precedence nonassoc IFX;
 precedence nonassoc ELSE;
 precedence left REL_OP;
@@ -33,12 +36,15 @@ start with program;
 
 /* Regras da Gramática JACA */
 
-program ::= stmt_list ;
+program ::= stmt_list
+          ;
 
-/* Lista de comandos usando recursão à esquerda (BNF Puro) */
+/*
+ * Recursão à ESQUERDA (BNF puro, sem [ ] ou { }).
+ * A produção vazia (epsilon) permite programa vazio.
+ */
 stmt_list ::= stmt_list stmt
-            | stmt
-            | /* vazio */
+            | /* vazio (epsilon) */
             ;
 
 stmt ::= assign_stmt
@@ -48,20 +54,31 @@ stmt ::= assign_stmt
        | null_stmt
        ;
 
-assign_stmt ::= ID ASSIGN expr SEMI ;
+assign_stmt ::= ID ASSIGN expr SEMI
+              ;
 
-/* Estrutura IF com solução para o conflito shift/reduce do ELSE */
+/*
+ * Solução clássica para o conflito dangling-else:
+ * %prec IFX força o shift do ELSE ao invés do reduce prematuro.
+ */
 if_stmt ::= IF LPAREN expr RPAREN THEN block_stmt %prec IFX
           | IF LPAREN expr RPAREN THEN block_stmt ELSE block_stmt
           ;
 
-while_stmt ::= WHILE LPAREN expr RPAREN block_stmt ;
+while_stmt ::= WHILE LPAREN expr RPAREN block_stmt
+             ;
 
-block_stmt ::= LBRACE stmt_list RBRACE ;
+block_stmt ::= LBRACE stmt_list RBRACE
+             ;
 
-null_stmt ::= SEMI ;
+null_stmt ::= SEMI
+            ;
 
-/* Expressões com precedência definida no topo do arquivo */
+/*
+ * Expressões com associatividade e precedência definidas acima.
+ * A precedência das regras é determinada pelo terminal mais à direita
+ * (ADD_OP, MUL_OP, REL_OP), resolvendo shift/reduce automaticamente.
+ */
 expr ::= expr ADD_OP expr
        | expr MUL_OP expr
        | expr REL_OP expr
