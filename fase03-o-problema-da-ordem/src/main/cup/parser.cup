@@ -12,11 +12,14 @@ terminal IF, THEN, ELSE, WHILE;
 terminal ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, SEMI;
 terminal String ID, NUMBER;
 terminal String ADD_OP, MUL_OP, REL_OP;
+terminal IFX;
 
 non terminal program, stmt_list, stmt;
 non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
 non terminal expr;
 
+precedence nonassoc IFX;
+precedence nonassoc ELSE;
 precedence nonassoc REL_OP;
 precedence left ADD_OP;
 precedence left MUL_OP;
@@ -38,7 +41,7 @@ stmt ::= assign_stmt
 
 assign_stmt ::= ID ASSIGN expr SEMI ;
 
-if_stmt ::= IF LPAREN expr RPAREN THEN block_stmt
+if_stmt ::= IF LPAREN expr RPAREN THEN block_stmt %prec IFX
           | IF LPAREN expr RPAREN THEN block_stmt ELSE block_stmt
           ;
 
