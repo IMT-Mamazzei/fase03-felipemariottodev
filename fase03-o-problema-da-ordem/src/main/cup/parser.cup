@@ -23,7 +23,7 @@ precedence left MUL_OP;
 
 start with program;
 
-program ::= stmt_list EOF ;
+program ::= stmt_list ;
 
 stmt_list ::= stmt_list stmt
             |
