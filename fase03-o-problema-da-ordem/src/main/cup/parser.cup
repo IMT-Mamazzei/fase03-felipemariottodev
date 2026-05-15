@@ -3,47 +3,30 @@ package br.maua.cic303;
 import java_cup.runtime.*;
 
 parser code {:
-    // Método chamado pelo CUP quando encontra um erro sintático
     public void syntax_error(Symbol cur_token) {
         throw new RuntimeException("Erro Sintático na linha " + cur_token.left + ", coluna " + cur_token.right);
     }
 :}
-
-/* ========================================================================= */
-/* DECLARAÇÃO DOS TOKENS (TERMINAIS)                                         */
-/* ========================================================================= */
 
 terminal IF, THEN, ELSE, WHILE;
 terminal ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, SEMI;
 terminal String ID, NUMBER;
 terminal String ADD_OP, MUL_OP, REL_OP;
 
-/* ========================================================================= */
-/* DECLARAÇÃO DOS NÃO-TERMINAIS                                              */
-/* ========================================================================= */
-
 non terminal program, stmt_list, stmt;
 non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
 non terminal expr;
 
-/* ========================================================================= */
-/* PRECEDÊNCIA E ASSOCIATIVIDADE                                             */
-/* ========================================================================= */
-
 precedence left REL_OP;
 precedence left ADD_OP;
 precedence left MUL_OP;
-
-/* ========================================================================= */
-/* REGRAS DA GRAMÁTICA                                                       */
-/* ========================================================================= */
 
 start with program;
 
 program ::= stmt_list ;
 
 stmt_list ::= stmt_list stmt
-            | stmt
+            |
             ;
 
 stmt ::= assign_stmt
