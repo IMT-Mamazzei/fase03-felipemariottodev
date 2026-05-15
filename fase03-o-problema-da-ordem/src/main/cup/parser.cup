@@ -4,32 +4,41 @@ import java_cup.runtime.*;
 
 parser code {:
     public void syntax_error(Symbol cur_token) {
-        throw new RuntimeException("Erro Sintático na linha " + cur_token.left + ", coluna " + cur_token.right);
+        throw new RuntimeException("Erro Sintático na linha " + (cur_token.left + 1) + ", coluna " + (cur_token.right + 1));
     }
-:}
+:};
 
+/* Terminais (Tokens vindos do Lexer) */
 terminal IF, THEN, ELSE, WHILE;
 terminal ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, SEMI;
 terminal String ID, NUMBER;
 terminal String ADD_OP, MUL_OP, REL_OP;
+
+/* Terminal fictício para resolver o conflito do ELSE */
 terminal IFX;
 
+/* Não-terminais */
 non terminal program, stmt_list, stmt;
 non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
 non terminal expr;
 
+/* Precedências e Associatividade */
 precedence nonassoc IFX;
 precedence nonassoc ELSE;
-precedence nonassoc REL_OP;
+precedence left REL_OP;
 precedence left ADD_OP;
 precedence left MUL_OP;
 
 start with program;
 
+/* Regras da Gramática JACA */
+
 program ::= stmt_list ;
 
+/* Lista de comandos usando recursão à esquerda (BNF Puro) */
 stmt_list ::= stmt_list stmt
-            |
+            | stmt
+            | /* vazio */
             ;
 
 stmt ::= assign_stmt
@@ -41,6 +50,7 @@ stmt ::= assign_stmt
 
 assign_stmt ::= ID ASSIGN expr SEMI ;
 
+/* Estrutura IF com solução para o conflito shift/reduce do ELSE */
 if_stmt ::= IF LPAREN expr RPAREN THEN block_stmt %prec IFX
           | IF LPAREN expr RPAREN THEN block_stmt ELSE block_stmt
           ;
@@ -51,6 +61,7 @@ block_stmt ::= LBRACE stmt_list RBRACE ;
 
 null_stmt ::= SEMI ;
 
+/* Expressões com precedência definida no topo do arquivo */
 expr ::= expr ADD_OP expr
        | expr MUL_OP expr
        | expr REL_OP expr

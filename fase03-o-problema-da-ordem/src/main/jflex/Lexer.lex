@@ -37,17 +37,20 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     
     {WhiteSpace}    { }
 
+    /* Palavras Reservadas */
     "if"            { return symbol(sym.IF); }
     "then"          { return symbol(sym.THEN); }
     "else"          { return symbol(sym.ELSE); }
     "while"         { return symbol(sym.WHILE); }
 
+    /* Delimitadores e Pontuação */
     "("             { return symbol(sym.LPAREN); }
     ")"             { return symbol(sym.RPAREN); }
     "{"             { return symbol(sym.LBRACE); }
     "}"             { return symbol(sym.RBRACE); }
     ";"             { return symbol(sym.SEMI); }
 
+    /* Operadores Relacionais e Atribuição */
     "=="            { return symbol(sym.REL_OP, yytext()); }
     "!="            { return symbol(sym.REL_OP, yytext()); }
     "<="            { return symbol(sym.REL_OP, yytext()); }
@@ -56,9 +59,14 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     ">"             { return symbol(sym.REL_OP, yytext()); }
     "="             { return symbol(sym.ASSIGN); }
 
-    "+" | "-"       { return symbol(sym.ADD_OP, yytext()); }
-    "*" | "/" | "%" { return symbol(sym.MUL_OP, yytext()); }
+    /* Operadores Aritméticos */
+    "+"             { return symbol(sym.ADD_OP, yytext()); }
+    "-"             { return symbol(sym.ADD_OP, yytext()); }
+    "*"             { return symbol(sym.MUL_OP, yytext()); }
+    "/"             { return symbol(sym.MUL_OP, yytext()); }
+    "%"             { return symbol(sym.MUL_OP, yytext()); }
 
+    /* Identificadores e Números */
     {OversizedIdentifier} { 
         throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); 
     }
@@ -66,7 +74,8 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     {Identifier}    { return symbol(sym.ID, yytext()); }
     {Number}        { return symbol(sym.NUMBER, yytext()); }
 
+    /* Erro para caracteres não reconhecidos */
     .               { throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }
 }
 
-<<EOF>>             { return symbol(sym.EOF, ""); }
+<<EOF>>             { return symbol(sym.EOF); }
