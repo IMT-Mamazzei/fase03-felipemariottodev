@@ -8,7 +8,6 @@ parser code {:
     }
 :}
 
-terminal EOF;
 terminal IF, THEN, ELSE, WHILE;
 terminal ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, SEMI;
 terminal String ID, NUMBER;
